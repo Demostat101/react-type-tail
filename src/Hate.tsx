@@ -24,7 +24,7 @@ const Hate = ({ Notify }: Props) => {
       
       <form action="">
         <div
-          className="w-52 h-52 border-solid border-2 text-white font-bold flex justify-center place-items-center "
+          className="w-52 text-3xl h-52 border-solid border-2 text-white font-bold flex justify-center place-items-center "
           style={{ backgroundColor: color }}
         >
           {color}

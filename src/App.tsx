@@ -4,21 +4,27 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Love from "./Love";
 import Hate from "./Hate";
-// import { useNavigate } from 'react-router-dom'
 import Loyalty from "./Loyalty";
 import { useState } from "react";
+import Todo from "./todoComponent/Todo";
+
+
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // const navigate = useNavigate()
 
   const Notify = () => {
     if (!isOpen) {
       toast.success("Modal opened Successfull !!!");
     }
     setIsOpen(true);
-    // navigate("/love")
+  };
+  const closeModal = () => {
+    if (isOpen) {
+      toast.success("Modal closed Successfull !!!");
+    }
+    setIsOpen(false);
   };
 
   return (
@@ -26,7 +32,7 @@ function App() {
       <ToastContainer position="bottom-left" theme="dark" autoClose={3000} />
 
       <Loyalty open={isOpen} close={setIsOpen}>
-        <Love close={setIsOpen} open={isOpen} />
+        <Love closeModal={closeModal}  />
       </Loyalty>
 
       <Routes>
@@ -36,6 +42,7 @@ function App() {
         />
         {/* <Route path='/love' element={<Love/>} /> */}
       </Routes>
+      <Todo/>
     </div>
   );
 }
