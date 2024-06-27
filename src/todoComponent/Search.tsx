@@ -1,6 +1,6 @@
 interface Props{
     searchHandler:React.ChangeEventHandler<HTMLInputElement>,
-    search:string
+    search:string,
 }
 
 

@@ -19,12 +19,14 @@ function App() {
       toast.success("Modal opened Successfull !!!");
     }
     setIsOpen(true);
+  
   };
   const closeModal = () => {
     if (isOpen) {
       toast.success("Modal closed Successfull !!!");
     }
     setIsOpen(false);
+   
   };
 
   return (
@@ -32,13 +34,13 @@ function App() {
       <ToastContainer position="bottom-left" theme="dark" autoClose={3000} />
 
       <Loyalty open={isOpen} close={setIsOpen}>
-        <Love closeModal={closeModal}  />
+        <Love closeModal={closeModal} />
       </Loyalty>
 
       <Routes>
         <Route
           path="/"
-          element={<Hate Notify={Notify} close={setIsOpen} open={isOpen} />}
+          element={<Hate Notify={Notify} close={setIsOpen} open={isOpen}/>}
         />
         {/* <Route path='/love' element={<Love/>} /> */}
       </Routes>

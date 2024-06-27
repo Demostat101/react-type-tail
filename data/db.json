@@ -1,20 +1,3 @@
 {
-    "Items" : [
-
-        {
-            "id":1,
-            "checked":false,
-            "Item": "Almonds in the bag"
-        },
-        {
-            "id":2,
-            "checked":false,
-            "Item": "Oranges in the bag"
-        },
-        {
-            "id":3,
-            "checked":false,
-            "Item": "Mango in the bag"
-        }
-    ]
+  "Items": []
 }

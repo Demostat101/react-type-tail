@@ -1,103 +1,185 @@
-import { useState } from "react"
-import { FaTrash } from "react-icons/fa"
-import TodoInput from "./TodoInput"
-import Search from "./Search"
-
-
-
+import { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
+import TodoInput from "./TodoInput";
+import Search from "./Search";
+import { useRef } from "react";
+import apiRequest from "../ApiRequest";
 
 const Todo = () => {
+  const API_URL = "http://localhost:4000/Items";
 
-    const [addTodo, setAddTodo]= useState("")
-    const [search, setSearch] = useState("")
-    const [todo, setTodo] = useState([
-        {
-            id:1,
-            task:"Want to play football",
-            completed: false
-        },
-        {
-            id:2,
-            task:"Want to read",
-            completed: false
-        },
-        {
-            id:3,
-            task:"Want to sleep",
-            completed: false
+  const [addTodo, setAddTodo] = useState("");
+  const [search, setSearch] = useState("");
+  const [todo, setTodo] = useState([]);
+  const [error, setError] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const inputRef = useRef();
+
+  const restApi = async () => {
+    try {
+
+        const data = await fetch(API_URL);
+        if (!data.ok) {
+
+            throw new Error("Did not receive the correct data");   
+            
+        } else{
+            setIsLoading(true)
         }
-    ])
-
-    const searchHandler = (e:React.ChangeEvent<HTMLInputElement>)=>{
-
-        setSearch(e.target.value)  
+        const response = await data.json();
+       setTodo(response)
+       setError(null)
+       
+        return response
+        
+        
+        
+    } catch (error) {
+       
+        setError(error.message)
+        setIsLoading(false)
+        
     }
+  }
 
-    const addNewData = ()=>{
-
-        if (addTodo === "") {
-           return; 
-        } else {
-
-            let  addData = {
-                id:todo.length+1,
-                task:addTodo,
-                completed:false
-            }
   
-            setAddTodo("")
-            return setTodo((prev)=>{
-                return [...prev, addData]
-            })
-        }
+
+  const searchHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+        restApi()
+    }, 3000);
+  }, []);
+
+  const addNewData = async () => {
+    if (addTodo === "") {
+      return;
+    } else {
+      let addData = {
+        id: (todo.length ? todo.length + 1 : 1).toString(),
+        task: addTodo,
+        completed: false,
+      };
+      //to clear input field
+      setAddTodo("");
+      //to set focus on input field
+      inputRef.current.focus();
+
+      //to add task to database
+      const postOption = {
+        method:"POST",
+        headers: {
+          "content-type" : "application/json"
+        },
+        body: JSON.stringify(addData)
+      }
+
+      const result = await apiRequest(API_URL, postOption)
+
+      if (result) {
+        setError(result)
+      }
+
+      return setTodo((prev) => {
+        return [...prev, addData];
+      });
+    }
+  };
+
+    //to filter by task in the search input
+  const loadSearch = todo.filter(
+    (item) => item.task.toLowerCase().indexOf(search.toLowerCase()) !== -1
+  );
+
+  const handleDelete = async (id: number) => {
+    setTodo(todo.filter((item) => item.id !== id));
+
+    const deleteOptions = {
+      method : "DELETE",
+      }
+
+    const reqUrl = `${API_URL}/${id}`
+    const result = await apiRequest(reqUrl, deleteOptions)
+    if (result) {
+      setError(result)
+    }
+  };
+
+  const handleCheckBox = async(id: number) => {
+    const toggleCheckBox = todo.map((item) =>
+      item.id === id ? { ...item, completed: !item.completed } : item
+    );
+
+    setTodo(toggleCheckBox);
+
+    //to update task
+
+    const myItem = toggleCheckBox.filter((item)=> item.id === id)
+
+    const updateOptions = {
+      method : "PATCH",
+      headers : {
+        "content-type" : "application/json"
+      },
+      body:JSON.stringify({completed: myItem[0].completed})
     }
 
-
- 
-
-    const handleDelete = (id:number)=>{
-
-        setTodo(todo.filter((item)=> item.id !== id))
-        
+    const reqUrl = `${API_URL}/${id}`
+    const result = await apiRequest(reqUrl, updateOptions)
+    if (result) {
+      setError(result)
     }
+  };
 
-
-    
-    const handleCheckBox = (id:number)=>{
-
-        const toggleCheckBox = todo.map((item)=> item.id === id ? {...item, completed:!item.completed} : item)
-        
-        setTodo(toggleCheckBox)
-        
-    }
-    
-    
-    
+  
 
   return (
     <ul className=" w-96 flex flex-col place-items-left justify-center ml-10 mt-10  h-full">
-        <TodoInput addTodo={addTodo} addNewData={addNewData} setAddTodo={setAddTodo}/>
-        <Search searchHandler={searchHandler} search={search}/>
-        {
-            todo.map((item)=>{
-                return <li key={Math.random()} className="flex w-96 justify-between place-items-center ">
-                    <div className="flex text-xl font-bold gap-4 h-full pt-3">
-                        <input type="checkbox" checked={item.completed} onChange={()=>handleCheckBox(item.id)} className="w-8 h-8 mb-3" /> 
-                        {!item.completed === true ?<div >{item.task}</div>: <del>{item.task}</del>}
-                    </div>
-                    
-                    <FaTrash size={20}
-                    role="button"
-                    onClick={()=> handleDelete(item.id)}
-                    
-                    />
-                </li>
-            })
 
-        }
         
-    </ul>
-  )
-}
+      <TodoInput
+        addTodo={addTodo}
+        addNewData={addNewData}
+        setAddTodo={setAddTodo}
+        inputRef={inputRef}
+      />
+      <Search searchHandler={searchHandler} search={search} />
+      <div className="text-red-700"> {error ?` Error: ${error}`:""}</div>
 
-export default Todo
+      {!isLoading ? <div className="loader mt-24 ml-10"></div>: ""}
+      {loadSearch.map((item) => {
+        return (
+          <li
+            key={Math.random()}
+            className="flex w-96 justify-between place-items-center "
+          >
+            <div className="flex text-xl font-bold gap-4 h-full pt-3">
+              <input
+                type="checkbox"
+                checked={item.completed}
+                onChange={() => handleCheckBox(item.id)}
+                className="w-8 h-8 mb-3"
+              />
+              {!item.completed === true ? (
+                <div>{item.task}</div>
+              ) : (
+                <del>{item.task}</del>
+              )}
+            </div>
+
+            <FaTrash
+              size={20}
+              role="button"
+              onClick={() => handleDelete(item.id)}
+            />
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
+
+export default Todo;
