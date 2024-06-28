@@ -1,14 +1,3 @@
 {
-  "Items": [
-    {
-      "id": "1",
-      "task": "i have books to read",
-      "completed": false
-    },
-    {
-      "id": "2",
-      "task": "lazy",
-      "completed": false
-    }
-  ]
+  "Items": []
 }

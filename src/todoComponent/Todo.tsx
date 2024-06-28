@@ -83,7 +83,7 @@ const Todo = () => {
 
   // COMPLETED TASKS
 
-  let arr = [];
+  let arr:[] = [];
 
   useEffect(() => {
     todo.map((val) => {
@@ -93,9 +93,12 @@ const Todo = () => {
     });
   }, [todo]);
 
-  /// ACTIVE TASK
+ 
   
-  let arr1 = [];
+
+  /// ACTIVE TASK
+
+  let arr1:[] = [];
 
   useEffect(() => {
     todo.map((val) => {
@@ -104,6 +107,7 @@ const Todo = () => {
         : setActiveTask(arr1.length);
     });
   }, [todo]);
+
 
   //to filter by task in the search input
   const loadSearch = todo.filter(
