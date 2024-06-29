@@ -4,18 +4,21 @@ import TodoInput from "./TodoInput";
 import Search from "./Search";
 import { useRef } from "react";
 import apiRequest from "../ApiRequest";
+import { Props } from "./Db";
+
+
 
 const Todo = () => {
   const API_URL = "http://localhost:4000/Items";
 
-  const [addTodo, setAddTodo] = useState("");
-  const [search, setSearch] = useState("");
-  const [todo, setTodo] = useState([]);
+  const [addTodo, setAddTodo] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const [todo, setTodo] = useState<Props[]>([]);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [completed, setCompleted] = useState(0);
-  const [activeTask, setActiveTask] = useState(0);
-  const inputRef = useRef();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [completed, setCompleted] = useState<number>(0);
+  const [activeTask, setActiveTask] = useState<number>(0);
+  const inputRef = useRef< HTMLInputElement >(null);
 
   const restApi = async () => {
     try {
@@ -30,7 +33,7 @@ const Todo = () => {
       setError(null);
 
       return response;
-    } catch (error) {
+    } catch (error:any) {
       setError(error.message);
       setIsLoading(false);
     }
@@ -50,7 +53,7 @@ const Todo = () => {
     if (addTodo === "") {
       return;
     } else {
-      let addData = {
+      let addData:Props = {
         id: (todo.length ? todo.length + 1 : 1).toString(),
         task: addTodo,
         completed: false,
@@ -58,7 +61,7 @@ const Todo = () => {
       //to clear input field
       setAddTodo("");
       //to set focus on input field
-      inputRef.current.focus();
+      inputRef.current?.focus();
 
       //to add task to database
       const postOption = {
@@ -83,13 +86,13 @@ const Todo = () => {
 
   // COMPLETED TASKS
 
-  let arr:[] = [];
+  let arr = [];
 
   useEffect(() => {
     todo.map((val) => {
-      val.completed
+     return (val.completed
         ? setCompleted(arr.push(val.completed))
-        : setCompleted(arr.length);
+        : setCompleted(arr.length));
     });
   }, [todo]);
 
@@ -98,7 +101,7 @@ const Todo = () => {
 
   /// ACTIVE TASK
 
-  let arr1:[] = [];
+  let arr1 = [];
 
   useEffect(() => {
     todo.map((val) => {
@@ -114,7 +117,7 @@ const Todo = () => {
     (item) => item.task.toLowerCase().indexOf(search.toLowerCase()) !== -1
   );
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     setTodo(todo.filter((item) => item.id !== id));
 
     const deleteOptions = {
@@ -128,7 +131,7 @@ const Todo = () => {
     }
   };
 
-  const handleCheckBox = async (id: number) => {
+  const handleCheckBox = async (id:string) => {
     const toggleCheckBox = todo.map((item) =>
       item.id === id ? { ...item, completed: !item.completed } : item
     );
